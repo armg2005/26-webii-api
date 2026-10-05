@@ -1,5 +1,8 @@
-import prisma from "../config/database.js";
-import { ConflictError, NotFoundError } from "../errors/AppError.js";
+import prisma from "../../../config/database.js";
+import {
+  ConflictError,
+  NotFoundError,
+} from "../../../errors/AppError.js";
 
 const publicUserSelect = {
   id: true,

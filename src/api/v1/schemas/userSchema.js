@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { positiveIdSchema } from "./idSchema.js";
+import { positiveIdSchema } from "../../../schemas/idSchema.js";
 
 const papelSchema = z.enum(["PROFESSOR", "ADMIN"], {
   message: "Papel deve ser PROFESSOR ou ADMIN",

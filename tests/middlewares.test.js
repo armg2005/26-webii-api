@@ -13,7 +13,7 @@ afterEach(() => vi.restoreAllMocks());
 describe("Infraestrutura e pipeline HTTP", () => {
   it("rejeita JSON malformado com 400 sem revelar o corpo", async () => {
     const response = await request(app)
-      .post("/users")
+      .post("/v1/users")
       .set("Content-Type", "application/json")
       .send('{"segredo":');
     expect(response.status).toBe(400);
@@ -24,12 +24,12 @@ describe("Infraestrutura e pipeline HTTP", () => {
 
   it("rejeita corpos acima de 100 KB com 413", async () => {
     const response = await request(app)
-      .post("/users")
+      .post("/v1/users")
       .send({ nome: "x".repeat(110000) });
     expect(response.status).toBe(413);
     expect(response.body.error.code).toBe("PAYLOAD_TOO_LARGE");
     expect(response.body.success).toBe(false);
-    expect(response.body.path).toBe("/users");
+    expect(response.body.path).toBe("/v1/users");
     expect(Number.isNaN(Date.parse(response.body.timestamp))).toBe(false);
   });
 
@@ -81,9 +81,23 @@ describe("Infraestrutura e pipeline HTTP", () => {
       code: "P2002",
       meta: { secret: true },
     });
-    const response = await request(app).get("/users");
+    const response = await request(app).get("/v1/users");
     expect(response.status).toBe(409);
     expect(response.body.error.code).toBe("CONFLICT");
     expect(JSON.stringify(response.body)).not.toContain("secret");
   });
+  it("expõe o health da V1", async () => {
+  const response = await request(app).get("/v1/health");
+
+  expect(response.status).toBe(200);
+  expect(response.body).toMatchObject({ version: "v1", status: "OK" });
+});
+
+it("rejeita a rota de usuário sem versão", async () => {
+  const response = await request(app).get("/users");
+
+  expect(response.status).toBe(404);
+  expect(response.body.error.code).toBe("NOT_FOUND");
+  expect(response.body.error.hint).toContain("/v1");
+});
 });

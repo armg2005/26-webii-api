@@ -7,7 +7,8 @@ const PORT = Number(process.env.PORT) || 3000;
 const server = app.listen(PORT, () => {
   console.log("Servidor rodando na porta " + PORT);
   console.log("Health check: http://localhost:" + PORT + "/health");
-  console.log("Usuários: http://localhost:" + PORT + "/users");
+  console.log("API v1: http://localhost:" + PORT + "/v1");
+  console.log("Usuários v1: http://localhost:" + PORT + "/v1/users");
 });
 
 /**

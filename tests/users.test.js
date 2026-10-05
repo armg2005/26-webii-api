@@ -18,11 +18,11 @@ function uniqueEmail(label) {
 /**
  * Cria um usuário pela API e registra o ID para a limpeza após o teste.
  * @param {object} [overrides={}] - Campos que substituem os valores padrão da requisição.
- * @returns {Promise<import("supertest").Response>} Resposta de `POST /users`.
+ * @returns {Promise<import("supertest").Response>} Resposta de `POST /v1/users`.
  */
 async function createUser(overrides = {}) {
   const response = await request(app)
-    .post("/users")
+    .post("/v1/users")
     .send({
       nome: "Prof. Teste",
       email: uniqueEmail("user"),
@@ -90,12 +90,12 @@ describe("User API com validação", () => {
       const id = created.body.data.id;
       await prisma.user.delete({ where: { id } });
       for (const invalidId of ["abc", "0", "-1", "1.5", "2147483648"]) {
-        const response = await client[method](`/users/${invalidId}`).send(
+        const response = await client[method](`/v1/users/${invalidId}`).send(
           method === "patch" ? { nome: "Novo nome" } : undefined,
         );
         expectApiError(response, 400, "VALIDATION_ERROR");
       }
-      const missing = await client[method](`/users/${id}`).send(
+      const missing = await client[method](`/v1/users/${id}`).send(
         method === "patch" ? { nome: "Novo nome" } : undefined,
       );
       expectApiError(missing, 404, "NOT_FOUND");
@@ -109,7 +109,7 @@ describe("User API com validação", () => {
       papel: "ADMIN",
     });
     const response = await request(app)
-      .patch(`/users/${created.body.data.id}`)
+      .patch(`/v1/users/${created.body.data.id}`)
       .send({ foto: null });
     expect(response.status).toBe(200);
     expect(response.body.data.foto).toBeNull();
@@ -117,7 +117,7 @@ describe("User API com validação", () => {
   });
 
   it("lista usuários e preserva o contrato de sucesso", async () => {
-    const response = await request(app).get("/users");
+    const response = await request(app).get("/v1/users");
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
@@ -139,7 +139,7 @@ describe("User API com validação", () => {
   });
 
   it("rejeita múltiplos erros de schema e campos extras", async () => {
-    const response = await request(app).post("/users").send({
+    const response = await request(app).post("/v1/users").send({
       nome: "A",
       email: "email-inválido",
       papel: "ALUNO",
@@ -169,8 +169,8 @@ describe("User API com validação", () => {
     const created = await createUser();
     const id = created.body.data.id;
     await prisma.user.delete({ where: { id } });
-    const invalid = await request(app).get("/users/abc");
-    const missing = await request(app).get(`/users/${id}`);
+    const invalid = await request(app).get("/v1/users/abc");
+    const missing = await request(app).get(`/v1/users/${id}`);
 
     expectApiError(invalid, 400, "VALIDATION_ERROR");
     expectApiError(missing, 404, "NOT_FOUND");
@@ -182,9 +182,9 @@ describe("User API com validação", () => {
     const originalEmail = created.body.data.email;
 
     const updated = await request(app)
-      .patch(`/users/${userId}`)
+      .patch(`/v1/users/${userId}`)
       .send({ nome: "  Nome atualizado  " });
-    const empty = await request(app).patch(`/users/${userId}`).send({});
+    const empty = await request(app).patch(`/v1/users/${userId}`).send({});
 
     expect(updated.status).toBe(200);
     expect(updated.body.data.nome).toBe("Nome atualizado");
@@ -197,7 +197,7 @@ describe("User API com validação", () => {
     const second = await createUser();
 
     const response = await request(app)
-      .patch(`/users/${second.body.data.id}`)
+      .patch(`/v1/users/${second.body.data.id}`)
       .send({ email: first.body.data.email.toUpperCase() });
 
     expectApiError(response, 409, "CONFLICT");
@@ -207,8 +207,8 @@ describe("User API com validação", () => {
     const created = await createUser();
     const userId = created.body.data.id;
 
-    const removed = await request(app).delete(`/users/${userId}`);
-    const found = await request(app).get(`/users/${userId}`);
+    const removed = await request(app).delete(`/v1/users/${userId}`);
+    const found = await request(app).get(`/v1/users/${userId}`);
 
     expect(removed.status).toBe(200);
     expect(removed.body.data.id).toBe(userId);
@@ -223,7 +223,7 @@ describe("User API com validação", () => {
     });
     createdSubjectIds.push(subject.id);
 
-    const response = await request(app).delete(`/users/${userId}`);
+    const response = await request(app).delete(`/v1/users/${userId}`);
 
     expectApiError(response, 409, "CONFLICT");
     expect(response.body.error.message).toContain("vinculadas");
@@ -246,7 +246,7 @@ describe("User API com validação", () => {
       .mockImplementation(() => {});
 
     try {
-      const response = await request(app).get("/users");
+      const response = await request(app).get("/v1/users");
 
       expectApiError(response, 500, "INTERNAL_ERROR");
       expect(response.body.error.message).not.toContain("segredo");

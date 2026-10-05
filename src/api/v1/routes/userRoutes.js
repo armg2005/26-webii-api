@@ -1,6 +1,6 @@
 import express from "express";
 import * as userController from "../controllers/userController.js";
-import validate from "../middlewares/validate.js";
+import validate from "../../../middlewares/validate.js";
 import {
   createUserSchema,
   idParamSchema,
