@@ -1,4 +1,3 @@
-
 import * as questionService from "../services/questionService.js";
 
 export const create = async (req, res, next) => {
@@ -31,9 +30,7 @@ export const getAll = async (_req, res, next) => {
 
 export const getById = async (req, res, next) => {
   try {
-    const question = await questionService.getQuestionById(
-      req.params.id,
-    );
+    const question = await questionService.getQuestionById(req.params.id);
 
     return res.status(200).json({
       success: true,
@@ -63,9 +60,7 @@ export const update = async (req, res, next) => {
 
 export const remove = async (req, res, next) => {
   try {
-    const question = await questionService.deleteQuestion(
-      req.params.id,
-    );
+    const question = await questionService.deleteQuestion(req.params.id);
 
     return res.status(200).json({
       success: true,

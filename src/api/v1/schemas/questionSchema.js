@@ -1,6 +1,5 @@
-
 import { z } from "zod";
-import { positiveIdSchema } from "./idSchema.js";
+import { positiveIdSchema } from "../../../schemas/idSchema.js";
 
 /** Schema para resposta correta opcional. */
 const respostaCorretaSchema = z.union([
@@ -23,9 +22,7 @@ export const createQuestionSchema = z
     dificuldade: z
       .union([
         z.number(),
-        z
-          .string()
-          .regex(/^\d+$/, "Dificuldade deve ser um número inteiro"),
+        z.string().regex(/^\d+$/, "Dificuldade deve ser um número inteiro"),
       ])
       .pipe(
         z.coerce
@@ -53,9 +50,7 @@ export const updateQuestionSchema = z
     dificuldade: z
       .union([
         z.number(),
-        z
-          .string()
-          .regex(/^\d+$/, "Dificuldade deve ser um número inteiro"),
+        z.string().regex(/^\d+$/, "Dificuldade deve ser um número inteiro"),
       ])
       .pipe(
         z.coerce

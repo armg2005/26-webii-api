@@ -1,6 +1,5 @@
-
 import { z } from "zod";
-import { positiveIdSchema } from "./idSchema.js";
+import { positiveIdSchema } from "../../../schemas/idSchema.js";
 
 /** Schema para POST /subjects. */
 export const createSubjectSchema = z

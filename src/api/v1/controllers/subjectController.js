@@ -1,6 +1,4 @@
-
 import * as subjectService from "../services/subjectService.js";
-
 /**
  * Cria uma matéria.
  */
@@ -59,10 +57,7 @@ export const update = async (req, res, next) => {
   try {
     const subjectId = req.params.id;
 
-    const subject = await subjectService.updateSubject(
-      subjectId,
-      req.body,
-    );
+    const subject = await subjectService.updateSubject(subjectId, req.body);
 
     return res.status(200).json({
       success: true,

@@ -23,7 +23,7 @@ function email(label) {
  */
 async function createUser(overrides = {}) {
   const response = await request(app)
-    .post("/users")
+    .post("/v1/users")
     .send({
       nome: "Professor de teste",
       email: email("professor"),
@@ -43,7 +43,7 @@ async function createUser(overrides = {}) {
  */
 async function createSubject(professorId, overrides = {}) {
   const response = await request(app)
-    .post("/subjects")
+    .post("/v1/subjects")
     .send({ nome: "Programação Web", professorId, ...overrides });
 
   expect(response.status).toBe(201);
@@ -60,7 +60,7 @@ async function createSubject(professorId, overrides = {}) {
  */
 async function createQuestion(subjectId, authorId, overrides = {}) {
   const response = await request(app)
-    .post("/questions")
+    .post("/v1/questions")
     .send({
       enunciado: "O que é uma API REST?",
       dificuldade: 2,
@@ -127,7 +127,7 @@ describe("Subject API com validação", () => {
       const professor = await createUser();
       const subject = await createSubject(professor.id);
       const post = await request(app)
-        .post("/subjects")
+        .post("/v1/subjects")
         .send({
           nome: "Matéria válida",
           professorId: professor.id,
@@ -135,7 +135,7 @@ describe("Subject API com validação", () => {
         });
       if (post.status === 201) subjectIds.push(post.body.data.id);
       const patch = await request(app)
-        .patch(`/subjects/${subject.id}`)
+        .patch(`/v1/subjects/${subject.id}`)
         .send(invalid);
       expectApiError(post, 400, "VALIDATION_ERROR");
       expectApiError(patch, 400, "VALIDATION_ERROR");
@@ -150,12 +150,12 @@ describe("Subject API com validação", () => {
       const subject = await createSubject(professor.id);
       await prisma.subject.delete({ where: { id: subject.id } });
       for (const id of ["abc", "0", "-1", "1.5", "2147483648"]) {
-        const invalid = await client[method](`/subjects/${id}`).send(
+        const invalid = await client[method](`/v1/subjects/${id}`).send(
           method === "patch" ? { nome: "Novo nome" } : undefined,
         );
         expectApiError(invalid, 400, "VALIDATION_ERROR");
       }
-      const missing = await client[method](`/subjects/${subject.id}`).send(
+      const missing = await client[method](`/v1/subjects/${subject.id}`).send(
         method === "patch" ? { nome: "Novo nome" } : undefined,
       );
       expectApiError(missing, 404, "NOT_FOUND");
@@ -172,12 +172,12 @@ describe("Subject API com validação", () => {
     expect(subject.ativa).toBe(false);
   });
   it("rejeita corpo inválido, campo extra e parâmetro inválido", async () => {
-    const invalidBody = await request(app).post("/subjects").send({
+    const invalidBody = await request(app).post("/v1/subjects").send({
       nome: " ",
       professorId: "invalido",
       inesperado: true,
     });
-    const invalidId = await request(app).get("/subjects/abc");
+    const invalidId = await request(app).get("/v1/subjects/abc");
 
     expectApiError(invalidBody, 400, "VALIDATION_ERROR");
     expect(invalidBody.body.error.details.length).toBeGreaterThan(1);
@@ -186,7 +186,7 @@ describe("Subject API com validação", () => {
 
   it("retorna erro padronizado quando o professor não existe", async () => {
     const response = await request(app)
-      .post("/subjects")
+      .post("/v1/subjects")
       .send({
         nome: "Matéria sem professor",
         professorId: await missingUserId(),
@@ -199,8 +199,8 @@ describe("Subject API com validação", () => {
     const professor = await createUser();
     const subject = await createSubject(professor.id);
 
-    const list = await request(app).get("/subjects");
-    const found = await request(app).get(`/subjects/${subject.id}`);
+    const list = await request(app).get("/v1/subjects");
+    const found = await request(app).get(`/v1/subjects/${subject.id}`);
 
     expect(list.status).toBe(200);
     expect(list.body.total).toBe(list.body.data.length);
@@ -214,10 +214,10 @@ describe("Subject API com validação", () => {
     const subject = await createSubject(professor.id, { ativa: true });
 
     const updated = await request(app)
-      .patch(`/subjects/${subject.id}`)
+      .patch(`/v1/subjects/${subject.id}`)
       .send({ nome: "  Banco de Dados  " });
     const missingProfessor = await request(app)
-      .patch(`/subjects/${subject.id}`)
+      .patch(`/v1/subjects/${subject.id}`)
       .send({ professorId: await missingUserId() });
 
     expect(updated.status).toBe(200);
@@ -231,9 +231,9 @@ describe("Subject API com validação", () => {
     const professor = await createUser();
     const subject = await createSubject(professor.id);
 
-    const empty = await request(app).patch(`/subjects/${subject.id}`).send({});
+    const empty = await request(app).patch(`/v1/subjects/${subject.id}`).send({});
     const extra = await request(app)
-      .patch(`/subjects/${subject.id}`)
+      .patch(`/v1/subjects/${subject.id}`)
       .send({ inesperado: true });
 
     expectApiError(empty, 400, "VALIDATION_ERROR");
@@ -244,8 +244,8 @@ describe("Subject API com validação", () => {
     const professor = await createUser();
     const subject = await createSubject(professor.id);
 
-    const removed = await request(app).delete(`/subjects/${subject.id}`);
-    const found = await request(app).get(`/subjects/${subject.id}`);
+    const removed = await request(app).delete(`/v1/subjects/${subject.id}`);
+    const found = await request(app).get(`/v1/subjects/${subject.id}`);
 
     expect(removed.status).toBe(200);
     expect(removed.body.data.id).toBe(subject.id);
@@ -257,7 +257,7 @@ describe("Subject API com validação", () => {
     const subject = await createSubject(professor.id);
     await createQuestion(subject.id, professor.id);
 
-    const response = await request(app).delete(`/subjects/${subject.id}`);
+    const response = await request(app).delete(`/v1/subjects/${subject.id}`);
 
     expectApiError(response, 409, "CONFLICT");
   });
@@ -287,7 +287,7 @@ describe("Question API com validação", () => {
       const subject = await createSubject(author.id);
       const question = await createQuestion(subject.id, author.id);
       const post = await request(app)
-        .post("/questions")
+        .post("/v1/questions")
         .send({
           enunciado: "Questão válida",
           dificuldade: 2,
@@ -297,7 +297,7 @@ describe("Question API com validação", () => {
         });
       if (post.status === 201) questionIds.push(post.body.data.id);
       const patch = await request(app)
-        .patch(`/questions/${question.id}`)
+        .patch(`/v1/questions/${question.id}`)
         .send(invalid);
       expectApiError(post, 400, "VALIDATION_ERROR");
       expectApiError(patch, 400, "VALIDATION_ERROR");
@@ -309,7 +309,7 @@ describe("Question API com validação", () => {
     async (method) => {
       const client = request(app);
       for (const id of ["abc", "0", "-1", "1.5", "2147483648"]) {
-        const response = await client[method](`/questions/${id}`).send(
+        const response = await client[method](`/v1/questions/${id}`).send(
           method === "patch" ? { dificuldade: 2 } : undefined,
         );
         expectApiError(response, 400, "VALIDATION_ERROR");
@@ -342,14 +342,14 @@ describe("Question API com validação", () => {
     const question = await createQuestion(subject.id, author.id);
     const removed = await createSubject(author.id);
     await prisma.subject.delete({ where: { id: removed.id } });
-    const post = await request(app).post("/questions").send({
+    const post = await request(app).post("/v1/questions").send({
       enunciado: "Questão válida",
       dificuldade: 1,
       subjectId: removed.id,
       authorId: author.id,
     });
     const patch = await request(app)
-      .patch(`/questions/${question.id}`)
+      .patch(`/v1/questions/${question.id}`)
       .send({ authorId: await missingUserId() });
     expectApiError(post, 404, "NOT_FOUND");
     expectApiError(patch, 404, "NOT_FOUND");
@@ -358,7 +358,7 @@ describe("Question API com validação", () => {
     const author = await createUser();
     const subject = await createSubject(author.id);
 
-    const invalid = await request(app).post("/questions").send({
+    const invalid = await request(app).post("/v1/questions").send({
       enunciado: "Questão válida",
       dificuldade: 4,
       subjectId: subject.id,
@@ -366,7 +366,7 @@ describe("Question API com validação", () => {
       inesperado: true,
     });
     const missingAuthor = await request(app)
-      .post("/questions")
+      .post("/v1/questions")
       .send({
         enunciado: "Questão válida",
         dificuldade: 1,
@@ -383,8 +383,8 @@ describe("Question API com validação", () => {
     const subject = await createSubject(author.id);
     const question = await createQuestion(subject.id, author.id);
 
-    const list = await request(app).get("/questions");
-    const found = await request(app).get(`/questions/${question.id}`);
+    const list = await request(app).get("/v1/questions");
+    const found = await request(app).get(`/v1/questions/${question.id}`);
 
     expect(list.status).toBe(200);
     expect(list.body.total).toBe(list.body.data.length);
@@ -403,7 +403,7 @@ describe("Question API com validação", () => {
     });
 
     const response = await request(app)
-      .patch(`/questions/${question.id}`)
+      .patch(`/v1/questions/${question.id}`)
       .send({ enunciado: "  O que é REST?  ", respostaCorreta: null });
 
     expect(response.status).toBe(200);
@@ -421,19 +421,19 @@ describe("Question API com validação", () => {
     await prisma.subject.delete({ where: { id: missingSubject.id } });
 
     const invalidDifficulty = await request(app)
-      .patch(`/questions/${question.id}`)
+      .patch(`/v1/questions/${question.id}`)
       .send({ dificuldade: 4 });
     const invalidId = await request(app)
-      .patch("/questions/abc")
+      .patch("/v1/questions/abc")
       .send({ dificuldade: 2 });
     const empty = await request(app)
-      .patch(`/questions/${question.id}`)
+      .patch(`/v1/questions/${question.id}`)
       .send({});
     const extra = await request(app)
-      .patch(`/questions/${question.id}`)
+      .patch(`/v1/questions/${question.id}`)
       .send({ inesperado: true });
     const missingRelation = await request(app)
-      .patch(`/questions/${question.id}`)
+      .patch(`/v1/questions/${question.id}`)
       .send({ subjectId: missingSubject.id });
 
     expectApiError(invalidDifficulty, 400, "VALIDATION_ERROR");
@@ -448,8 +448,8 @@ describe("Question API com validação", () => {
     const subject = await createSubject(author.id);
     const question = await createQuestion(subject.id, author.id);
 
-    const removed = await request(app).delete(`/questions/${question.id}`);
-    const found = await request(app).get(`/questions/${question.id}`);
+    const removed = await request(app).delete(`/v1/questions/${question.id}`);
+    const found = await request(app).get(`/v1/questions/${question.id}`);
 
     expect(removed.status).toBe(200);
     expect(removed.body.data.id).toBe(question.id);
@@ -462,9 +462,9 @@ describe("Question API com validação", () => {
     const question = await createQuestion(subject.id, author.id);
     await prisma.question.delete({ where: { id: question.id } });
     const update = await request(app)
-      .patch(`/questions/${question.id}`)
+      .patch(`/v1/questions/${question.id}`)
       .send({ dificuldade: 2 });
-    const remove = await request(app).delete(`/questions/${question.id}`);
+    const remove = await request(app).delete(`/v1/questions/${question.id}`);
 
     expectApiError(update, 404, "NOT_FOUND");
     expectApiError(remove, 404, "NOT_FOUND");

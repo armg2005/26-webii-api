@@ -1,6 +1,5 @@
-
-import prisma from "../config/database.js";
-import {NotFoundError,ConflictError,} from "../errors/AppError.js";
+import prisma from "../../../config/database.js";
+import { ConflictError, NotFoundError } from "../../../errors/AppError.js";
 
 const publicUserSelect = {
   id: true,
@@ -42,9 +41,7 @@ export const getSubjectById = async (subjectId) => {
   });
 
   if (!subject) {
-    throw new NotFoundError(
-      `Matéria com ID ${subjectId} não encontrada`,
-    );
+    throw new NotFoundError(`Matéria com ID ${subjectId} não encontrada`);
   }
 
   return subject;
@@ -92,9 +89,7 @@ export const updateSubject = async (subjectId, subjectData) => {
   });
 
   if (!subjectExists) {
-    throw new NotFoundError(
-      `Matéria com ID ${subjectId} não encontrada`,
-    );
+    throw new NotFoundError(`Matéria com ID ${subjectId} não encontrada`);
   }
 
   if (Object.hasOwn(subjectData, "professorId")) {
@@ -149,9 +144,7 @@ export const deleteSubject = async (subjectId) => {
   });
 
   if (!subjectExists) {
-    throw new NotFoundError(
-      `Matéria com ID ${subjectId} não encontrada`,
-    );
+    throw new NotFoundError(`Matéria com ID ${subjectId} não encontrada`);
   }
 
   if (subjectExists._count.questions > 0) {
@@ -170,9 +163,7 @@ export const deleteSubject = async (subjectId) => {
     }
 
     if (error.code === "P2025") {
-      throw new NotFoundError(
-        `Matéria com ID ${subjectId} não encontrada`,
-      );
+      throw new NotFoundError(`Matéria com ID ${subjectId} não encontrada`);
     }
 
     throw error;

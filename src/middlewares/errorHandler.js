@@ -19,7 +19,6 @@ export function notFoundHandler(req, _res, next) {
   next(error);
 }
 
-
 /**
  * Formata erros operacionais e protege detalhes internos em falhas inesperadas.
  * @param {Error} error - Erro recebido no pipeline do Express.

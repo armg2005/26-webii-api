@@ -1,6 +1,5 @@
-
-import prisma from "../config/database.js";
-import { NotFoundError } from "../errors/AppError.js";
+import prisma from "../../../config/database.js";
+import { NotFoundError } from "../../../errors/AppError.js";
 
 const publicUserSelect = {
   id: true,
@@ -37,9 +36,7 @@ async function relatedRecordsExist({ subjectId, authorId }) {
     });
 
     if (!subject) {
-      throw new NotFoundError(
-        `Matéria com ID ${subjectId} não encontrada`,
-      );
+      throw new NotFoundError(`Matéria com ID ${subjectId} não encontrada`);
     }
   }
 
@@ -50,9 +47,7 @@ async function relatedRecordsExist({ subjectId, authorId }) {
     });
 
     if (!author) {
-      throw new NotFoundError(
-        `Autor com ID ${authorId} não encontrado`,
-      );
+      throw new NotFoundError(`Autor com ID ${authorId} não encontrado`);
     }
   }
 }
@@ -71,14 +66,11 @@ export const getQuestionById = async (questionId) => {
   });
 
   if (!question) {
-    throw new NotFoundError(
-      `Questão com ID ${questionId} não encontrada`,
-    );
+    throw new NotFoundError(`Questão com ID ${questionId} não encontrada`);
   }
 
   return question;
 };
-
 
 export const createQuestion = async (questionData) => {
   await relatedRecordsExist(questionData);
@@ -103,9 +95,7 @@ export const updateQuestion = async (questionId, questionData) => {
   });
 
   if (!questionExists) {
-    throw new NotFoundError(
-      `Questão com ID ${questionId} não encontrada`,
-    );
+    throw new NotFoundError(`Questão com ID ${questionId} não encontrada`);
   }
 
   await relatedRecordsExist(questionData);
@@ -150,9 +140,7 @@ export const deleteQuestion = async (questionId) => {
   });
 
   if (!questionExists) {
-    throw new NotFoundError(
-      `Questão com ID ${questionId} não encontrada`,
-    );
+    throw new NotFoundError(`Questão com ID ${questionId} não encontrada`);
   }
 
   try {
@@ -162,9 +150,7 @@ export const deleteQuestion = async (questionId) => {
     });
   } catch (error) {
     if (error.code === "P2025") {
-      throw new NotFoundError(
-        `Questão com ID ${questionId} não encontrada`,
-      );
+      throw new NotFoundError(`Questão com ID ${questionId} não encontrada`);
     }
 
     throw error;
