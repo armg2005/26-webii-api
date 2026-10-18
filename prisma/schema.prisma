@@ -17,16 +17,30 @@ enum Papel {
   ADMIN
 }
 
+/// ADICIONADO: enum da V2; o enum Papel da V1 permanece intacto.
+enum TipoUsuario {
+  professor
+  admin
+}
+
 model User {
-  id        Int        @id @default(autoincrement())
-  nome      String
-  email     String     @unique
-  foto      String?
-  papel     Papel      @default(PROFESSOR)
-  createdAt DateTime   @default(now()) @map("data_criacao")
-  updatedAt DateTime   @updatedAt @map("data_atualizacao")
-  subjects  Subject[]
-  questions Question[]
+  id           Int          @id @default(autoincrement())
+  nome         String
+  email        String       @unique
+  foto         String?
+  papel        Papel        @default(PROFESSOR)
+  
+  // ADICIONADO: campos V2 anuláveis; não remover nome/papel nem preencher legado.
+  primeiroNome String?      @map("primeiro_nome")
+  sobrenome    String?
+  telefone     String?
+  
+  // Sem default no banco: um ADMIN legado não deve virar professor na V2.
+  tipoUsuario  TipoUsuario? @map("tipo_usuario")
+  createdAt    DateTime     @default(now()) @map("data_criacao")
+  updatedAt    DateTime     @updatedAt @map("data_atualizacao")
+  subjects     Subject[]
+  questions    Question[]
 
   @@map("users")
 }

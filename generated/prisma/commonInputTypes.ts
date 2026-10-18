@@ -62,6 +62,13 @@ export type EnumPapelFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumPapelFilter<$PrismaModel> | $Enums.Papel
 }
 
+export type EnumTipoUsuarioNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.TipoUsuario | Prisma.EnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TipoUsuario[] | Prisma.ListEnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TipoUsuario[] | Prisma.ListEnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTipoUsuarioNullableFilter<$PrismaModel> | $Enums.TipoUsuario | null
+}
+
 export type DateTimeFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel>
@@ -140,6 +147,16 @@ export type EnumPapelWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumPapelFilter<$PrismaModel>
 }
 
+export type EnumTipoUsuarioNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TipoUsuario | Prisma.EnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TipoUsuario[] | Prisma.ListEnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TipoUsuario[] | Prisma.ListEnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTipoUsuarioNullableWithAggregatesFilter<$PrismaModel> | $Enums.TipoUsuario | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTipoUsuarioNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTipoUsuarioNullableFilter<$PrismaModel>
+}
+
 export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel>
@@ -211,6 +228,13 @@ export type NestedEnumPapelFilter<$PrismaModel = never> = {
   in?: $Enums.Papel[] | Prisma.ListEnumPapelFieldRefInput<$PrismaModel>
   notIn?: $Enums.Papel[] | Prisma.ListEnumPapelFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumPapelFilter<$PrismaModel> | $Enums.Papel
+}
+
+export type NestedEnumTipoUsuarioNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.TipoUsuario | Prisma.EnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TipoUsuario[] | Prisma.ListEnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TipoUsuario[] | Prisma.ListEnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTipoUsuarioNullableFilter<$PrismaModel> | $Enums.TipoUsuario | null
 }
 
 export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -304,6 +328,16 @@ export type NestedEnumPapelWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumPapelFilter<$PrismaModel>
   _max?: Prisma.NestedEnumPapelFilter<$PrismaModel>
+}
+
+export type NestedEnumTipoUsuarioNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TipoUsuario | Prisma.EnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TipoUsuario[] | Prisma.ListEnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TipoUsuario[] | Prisma.ListEnumTipoUsuarioFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTipoUsuarioNullableWithAggregatesFilter<$PrismaModel> | $Enums.TipoUsuario | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTipoUsuarioNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTipoUsuarioNullableFilter<$PrismaModel>
 }
 
 export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {

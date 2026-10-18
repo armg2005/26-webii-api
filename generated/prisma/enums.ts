@@ -15,3 +15,11 @@ export const Papel = {
 } as const
 
 export type Papel = (typeof Papel)[keyof typeof Papel]
+
+
+export const TipoUsuario = {
+  professor: 'professor',
+  admin: 'admin'
+} as const
+
+export type TipoUsuario = (typeof TipoUsuario)[keyof typeof TipoUsuario]

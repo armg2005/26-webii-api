@@ -1,8 +1,10 @@
 //src/app.js
 import express from "express";
 import prisma from "./config/database.js";
-import errorHandler, { notFoundHandler } from "./middlewares/errorHandler.js";
 import v1Routes from "./api/v1/routes/index.js";
+// ADICIONADO: importa V2; os arquivos e o roteador da V1 permanecem intactos.
+import v2Routes from "./api/v2/routes/index.js";
+import errorHandler, { notFoundHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 
@@ -18,7 +20,8 @@ app.get("/health", async (_req, res) => {
       message: "API do Gerador de Provas",
       timestamp: new Date().toISOString(),
       version: "1.0.0",
-      availableVersions: ["v1"],
+      // MODIFICADO: anuncia V2 também, sem mudar o resultado 200/503.
+      availableVersions: ["v1", "v2"],
       services: {
         api: "OK",
         database: { status: "OK" },
@@ -30,6 +33,9 @@ app.get("/health", async (_req, res) => {
     return res.status(503).json({
       status: "DEGRADED",
       message: "API do Gerador de Provas",
+      version: "1.0.0",
+      // MODIFICADO: anuncia V2 também, sem mudar o resultado 200/503.
+      availableVersions: ["v1", "v2"],
       services: {
         api: "OK",
         database: { status: "ERROR" },
@@ -39,6 +45,8 @@ app.get("/health", async (_req, res) => {
 });
 
 app.use("/v1", v1Routes);
+// ADICIONADO: monta somente a V2; não modifica nem deprecia a montagem V1.
+app.use("/v2", v2Routes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
