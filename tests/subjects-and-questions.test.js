@@ -231,7 +231,9 @@ describe("Subject API com validação", () => {
     const professor = await createUser();
     const subject = await createSubject(professor.id);
 
-    const empty = await request(app).patch(`/v1/subjects/${subject.id}`).send({});
+    const empty = await request(app)
+      .patch(`/v1/subjects/${subject.id}`)
+      .send({});
     const extra = await request(app)
       .patch(`/v1/subjects/${subject.id}`)
       .send({ inesperado: true });

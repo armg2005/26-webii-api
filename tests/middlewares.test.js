@@ -87,17 +87,17 @@ describe("Infraestrutura e pipeline HTTP", () => {
     expect(JSON.stringify(response.body)).not.toContain("secret");
   });
   it("expõe o health da V1", async () => {
-  const response = await request(app).get("/v1/health");
+    const response = await request(app).get("/v1/health");
 
-  expect(response.status).toBe(200);
-  expect(response.body).toMatchObject({ version: "v1", status: "OK" });
-});
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({ version: "v1", status: "OK" });
+  });
 
-it("rejeita a rota de usuário sem versão", async () => {
-  const response = await request(app).get("/users");
+  it("rejeita a rota de usuário sem versão", async () => {
+    const response = await request(app).get("/users");
 
-  expect(response.status).toBe(404);
-  expect(response.body.error.code).toBe("NOT_FOUND");
-  expect(response.body.error.hint).toContain("/v1");
-});
+    expect(response.status).toBe(404);
+    expect(response.body.error.code).toBe("NOT_FOUND");
+    expect(response.body.error.hint).toContain("/v1");
+  });
 });
