@@ -152,3 +152,4 @@ skills-lock.json
 .claude/
 .windsurf/
 /src/generated/prisma
+tests/fixtures/upload/

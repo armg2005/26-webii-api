@@ -7,7 +7,7 @@ info:
 
 http:
   method: DELETE
-  url: "{{baseUrl}}/subjects/{{linkedSubjectId}}"
+  url: "{{baseUrl}}/v1/subjects/{{linkedSubjectId}}"
 
 runtime:
   scripts:
@@ -16,7 +16,7 @@ runtime:
         const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
         const userResponse = await bru.sendRequest({
           method: "POST",
-          url: `${bru.getEnvVar("baseUrl")}/users`,
+          url: `${bru.getEnvVar("baseUrl")}/v1/users`,
           headers: { "Content-Type": "application/json" },
           data: {
             nome: "Professor da matéria vinculada",
@@ -31,7 +31,7 @@ runtime:
 
         const subjectResponse = await bru.sendRequest({
           method: "POST",
-          url: `${bru.getEnvVar("baseUrl")}/subjects`,
+          url: `${bru.getEnvVar("baseUrl")}/v1/subjects`,
           headers: { "Content-Type": "application/json" },
           data: {
             nome: "Matéria temporária com questão",
@@ -45,7 +45,7 @@ runtime:
 
         const questionResponse = await bru.sendRequest({
           method: "POST",
-          url: `${bru.getEnvVar("baseUrl")}/questions`,
+          url: `${bru.getEnvVar("baseUrl")}/v1/questions`,
           headers: { "Content-Type": "application/json" },
           data: {
             enunciado: "Questão temporária para vínculo",
@@ -69,7 +69,7 @@ runtime:
         if (questionId) {
           await bru.sendRequest({
             method: "DELETE",
-            url: `${bru.getEnvVar("baseUrl")}/questions/${questionId}`
+            url: `${bru.getEnvVar("baseUrl")}/v1/questions/${questionId}`
           });
         }
 
@@ -78,7 +78,7 @@ runtime:
         if (subjectId) {
           await bru.sendRequest({
             method: "DELETE",
-            url: `${bru.getEnvVar("baseUrl")}/subjects/${subjectId}`
+            url: `${bru.getEnvVar("baseUrl")}/v1/subjects/${subjectId}`
           });
         }
 
@@ -87,7 +87,7 @@ runtime:
         if (professorId) {
           await bru.sendRequest({
             method: "DELETE",
-            url: `${bru.getEnvVar("baseUrl")}/users/${professorId}`
+            url: `${bru.getEnvVar("baseUrl")}/v1/users/${professorId}`
           });
         }
     - type: tests

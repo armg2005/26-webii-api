@@ -7,7 +7,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/users"
+  url: "{{baseUrl}}/v1/users"
   body:
     type: json
     data: |-

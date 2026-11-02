@@ -7,7 +7,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/subjects"
+  url: "{{baseUrl}}/v1/subjects"
   body:
     type: json
     data: |-
@@ -44,12 +44,12 @@ runtime:
           bru.setVar("caseFixtures", bru.getVar("caseFixtures").filter(item => item.resource !== resource || item.id !== id));
         }
         bru.setVar("caseSuffix", suffix);
-        const userId = await createFixture("users", { nome: "Professor temporário", email: `fixture-${suffix}@exemplo.com` });
+        const userId = await createFixture("v1/users", { nome: "Professor temporário", email: `fixture-${suffix}@exemplo.com` });
         bru.setVar("caseUserId", String(userId));
     - type: after-response
       code: |-
         const fixtures = bru.getVar("caseFixtures") || [];
-        if (res.status === 201 && res.body?.data?.id) fixtures.push({ resource: "subjects", id: res.body.data.id });
+        if (res.status === 201 && res.body?.data?.id) fixtures.push({ resource: "v1/subjects", id: res.body.data.id });
         const failures = [];
         for (const fixture of [...fixtures].reverse()) {
           try {

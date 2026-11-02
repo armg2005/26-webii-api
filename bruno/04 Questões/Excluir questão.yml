@@ -7,7 +7,7 @@ info:
 
 http:
   method: DELETE
-  url: "{{baseUrl}}/questions/{{questionId}}"
+  url: "{{baseUrl}}/v1/questions/{{questionId}}"
 
 runtime:
   scripts:
@@ -21,14 +21,14 @@ runtime:
           if (subjectId) {
             await bru.sendRequest({
               method: "DELETE",
-              url: `${baseUrl}/subjects/${subjectId}`
+              url: `${baseUrl}/v1/subjects/${subjectId}`
             });
           }
 
           if (authorId) {
             await bru.sendRequest({
               method: "DELETE",
-              url: `${baseUrl}/users/${authorId}`
+              url: `${baseUrl}/v1/users/${authorId}`
             });
           }
         }

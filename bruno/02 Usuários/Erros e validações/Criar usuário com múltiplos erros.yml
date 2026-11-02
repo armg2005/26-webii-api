@@ -7,7 +7,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/users"
+  url: "{{baseUrl}}/v1/users"
   body:
     type: json
     data: |-
@@ -29,7 +29,7 @@ runtime:
           expect(res.body.error.details).to.be.an("array");
           expect(res.body.error.details.length).to.be.greaterThan(1);
           expect(res.body.timestamp).to.be.a("string");
-          expect(res.body.path).to.equal("/users");
+          expect(res.body.path).to.equal("/v1/users");
         });
 
 settings:

@@ -7,7 +7,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/questions/{{questionId}}"
+  url: "{{baseUrl}}/v1/questions/{{questionId}}"
 
 runtime:
   scripts:

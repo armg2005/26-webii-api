@@ -7,7 +7,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/users/{{userId}}"
+  url: "{{baseUrl}}/v1/users/{{userId}}"
   body:
     type: json
     data: |-

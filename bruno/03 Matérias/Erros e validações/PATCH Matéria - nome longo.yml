@@ -7,7 +7,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/subjects/{{caseSubjectId}}"
+  url: "{{baseUrl}}/v1/subjects/{{caseSubjectId}}"
   body:
     type: json
     data: |-
@@ -41,9 +41,9 @@ runtime:
           bru.setVar("caseFixtures", bru.getVar("caseFixtures").filter(item => item.resource !== resource || item.id !== id));
         }
         bru.setVar("caseSuffix", suffix);
-        const userId = await createFixture("users", { nome: "Professor temporário", email: `fixture-${suffix}@exemplo.com` });
+        const userId = await createFixture("v1/users", { nome: "Professor temporário", email: `fixture-${suffix}@exemplo.com` });
         bru.setVar("caseUserId", String(userId));
-        const subjectId = await createFixture("subjects", { nome: "Matéria temporária", professorId: userId });
+        const subjectId = await createFixture("v1/subjects", { nome: "Matéria temporária", professorId: userId });
         bru.setVar("caseSubjectId", String(subjectId));
     - type: after-response
       code: |-

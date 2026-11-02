@@ -1,0 +1,77 @@
+info:
+  name: "POST V2 opcionais nulos"
+  type: http
+  seq: 6
+  tags: [aula-08-pratica]
+
+http:
+  method: POST
+  url: "{{baseUrl}}/v2/users"
+  body:
+    type: json
+    data: |-
+      {
+        "primeiroNome": "Ada",
+        "sobrenome": "Lovelace",
+        "email": "{{a08Email}}",
+        "telefone": null,
+        "foto": null
+      }
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+
+        const baseUrl = bru.getEnvVar("baseUrl");
+        const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        bru.setVar("a08Fixtures", []);
+        bru.setVar("a08CleanupErrors", ["Limpeza ainda não executada"]);
+        bru.setVar("a08Run", suffix);
+        bru.setVar("a08Email", `aula08-${suffix}@example.com`);
+        for (const key of ["a08User", "a08Subject", "a08Question", "a08Missing", "a08OtherUser", "a08OtherSubject"]) bru.setVar(key, "");
+        /** Fixtures sempre usam V1, independente da implementação da atividade. */
+        async function createFixture(resource, data) {
+          const response = await bru.sendRequest({ method: "POST", url: `${baseUrl}/v1/${resource}`, headers: { "Content-Type": "application/json" }, data });
+          if (response.status !== 201) throw new Error(`Preparação ${resource}: ${response.status}`);
+          const id = response.data.data.id;
+          const fixtures = bru.getVar("a08Fixtures");
+          fixtures.push({ resource, id });
+          bru.setVar("a08Fixtures", fixtures);
+          return id;
+        }
+        /** Obtém ID ausente criando e removendo apenas a própria fixture. */
+        async function removeFixture(resource, id) {
+          const response = await bru.sendRequest({ method: "DELETE", url: `${baseUrl}/v1/${resource}/${id}`});
+          if (response.status !== 200) throw new Error("Preparação do ID ausente falhou");
+          bru.setVar("a08Fixtures", bru.getVar("a08Fixtures").filter(item => item.resource !== resource || item.id !== id));
+          bru.setVar("a08Missing", String(id));
+        }
+        bru.setVar("a08Cross", null); bru.setVar("a08RemovedStatus", null);
+        const userId = await createFixture("users", { nome: "Ada Lovelace", email: "fixture-" + bru.getVar("a08Email") });
+        bru.setVar("a08User", String(userId));
+        bru.setVar("a08FixtureEmail", "fixture-" + bru.getVar("a08Email"));
+    - type: after-response
+      code: |-
+        if(res.status===201 && Number.isInteger(res.body?.data?.id)) { const fixtures=bru.getVar("a08Fixtures"); fixtures.push({resource:"users",id:res.body.data.id}); bru.setVar("a08Fixtures",fixtures); }
+
+        const cleanupErrors = [];
+        for (const resource of ["questions", "subjects", "users"]) {
+          for (const fixture of (bru.getVar("a08Fixtures") || []).filter(item => item.resource === resource).reverse()) {
+            try {
+              const response = await bru.sendRequest({ method: "DELETE", url: `${bru.getEnvVar("baseUrl")}/v1/${resource}/${fixture.id}` });
+              if (![200, 404].includes(response.status)) cleanupErrors.push(`${resource}/${fixture.id}: ${response.status}`);
+            } catch (error) { if (error.response?.status !== 404) cleanupErrors.push("Falha de limpeza da própria fixture"); }
+          }
+        }
+        bru.setVar("a08CleanupErrors", cleanupErrors);
+        bru.setVar("a08Fixtures", []);
+    - type: tests
+      code: |-
+        test("Limpa fixtures próprias", function() { expect(bru.getVar("a08CleanupErrors")).to.deep.equal([]); });
+        test("POST V2 opcionais nulos", function() {
+          expect(res.status).to.equal(201); expect(res.body.success).to.equal(true); expect(res.body.data.telefone).to.equal(null); expect(res.body.data.foto).to.equal(null);
+        });
+
+settings:
+  encodeUrl: true

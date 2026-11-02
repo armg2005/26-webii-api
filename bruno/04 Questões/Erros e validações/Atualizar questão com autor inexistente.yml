@@ -7,7 +7,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/questions/{{caseQuestionId}}"
+  url: "{{baseUrl}}/v1/questions/{{caseQuestionId}}"
   body:
     type: json
     data: |-
@@ -40,14 +40,14 @@ runtime:
           bru.setVar("caseMissingId", String(id));
           bru.setVar("caseFixtures", bru.getVar("caseFixtures").filter(item => item.resource !== resource || item.id !== id));
         }
-        const userId = await createFixture("users", { nome: "Professor temporário", email: `fixture-${suffix}@exemplo.com` });
+        const userId = await createFixture("v1/users", { nome: "Professor temporário", email: `fixture-${suffix}@exemplo.com` });
         bru.setVar("caseUserId", String(userId));
-        const subjectId = await createFixture("subjects", { nome: "Matéria temporária", professorId: userId });
+        const subjectId = await createFixture("v1/subjects", { nome: "Matéria temporária", professorId: userId });
         bru.setVar("caseSubjectId", String(subjectId));
-        const questionId = await createFixture("questions", { enunciado: "Questão temporária", dificuldade: 2, subjectId, authorId: userId });
+        const questionId = await createFixture("v1/questions", { enunciado: "Questão temporária", dificuldade: 2, subjectId, authorId: userId });
         bru.setVar("caseQuestionId", String(questionId));
-        const absentUser = await createFixture("users", { nome: "Usuário ausente", email: `ausente-${suffix}@exemplo.com` });
-        await removeFixture("users", absentUser);
+        const absentUser = await createFixture("v1/users", { nome: "Usuário ausente", email: `ausente-${suffix}@exemplo.com` });
+        await removeFixture("v1/users", absentUser);
     - type: after-response
       code: |-
         const fixtures = bru.getVar("caseFixtures") || [];

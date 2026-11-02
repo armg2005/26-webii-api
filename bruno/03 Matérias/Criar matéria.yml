@@ -7,7 +7,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/subjects"
+  url: "{{baseUrl}}/v1/subjects"
   body:
     type: json
     data: |-
@@ -25,7 +25,7 @@ runtime:
 
         const response = await bru.sendRequest({
           method: "POST",
-          url: `${bru.getEnvVar("baseUrl")}/users`,
+          url: `${bru.getEnvVar("baseUrl")}/v1/users`,
           headers: { "Content-Type": "application/json" },
           data: {
             nome: "Professor da matéria",

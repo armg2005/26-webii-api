@@ -7,7 +7,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/users/{{caseMissingId}}"
+  url: "{{baseUrl}}/v1/users/{{caseMissingId}}"
   body:
     type: json
     data: |-
@@ -40,9 +40,9 @@ runtime:
           bru.setVar("caseMissingId", String(id));
           bru.setVar("caseFixtures", bru.getVar("caseFixtures").filter(item => item.resource !== resource || item.id !== id));
         }
-        const userId = await createFixture("users", { nome: "Professor temporário", email: `fixture-${suffix}@exemplo.com` });
+        const userId = await createFixture("v1/users", { nome: "Professor temporário", email: `fixture-${suffix}@exemplo.com` });
         bru.setVar("caseUserId", String(userId));
-        await removeFixture("users", userId);
+        await removeFixture("v1/users", userId);
     - type: after-response
       code: |-
         const fixtures = bru.getVar("caseFixtures") || [];

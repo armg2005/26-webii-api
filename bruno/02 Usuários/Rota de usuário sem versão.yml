@@ -1,0 +1,21 @@
+info:
+  name: Rota de usuário sem versão
+  type: http
+  seq: 40
+
+http:
+  method: GET
+  url: "{{baseUrl}}/users"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("Orienta o cliente a usar a V1", function() {
+          expect(res.status).to.equal(404);
+          expect(res.body.error.code).to.equal("NOT_FOUND");
+          expect(res.body.error.hint).to.include("/v1");
+        });
+
+settings:
+  encodeUrl: true

@@ -7,7 +7,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/users/{{emptyPatchUserId}}"
+  url: "{{baseUrl}}/v1/users/{{emptyPatchUserId}}"
   body:
     type: json
     data: |-
@@ -20,7 +20,7 @@ runtime:
         const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
         const response = await bru.sendRequest({
           method: "POST",
-          url: `${bru.getEnvVar("baseUrl")}/users`,
+          url: `${bru.getEnvVar("baseUrl")}/v1/users`,
           headers: { "Content-Type": "application/json" },
           data: {
             nome: "Usuário para PATCH vazio",
@@ -41,7 +41,7 @@ runtime:
         if (userId) {
           await bru.sendRequest({
             method: "DELETE",
-            url: `${bru.getEnvVar("baseUrl")}/users/${userId}`
+            url: `${bru.getEnvVar("baseUrl")}/v1/users/${userId}`
           });
         }
     - type: tests

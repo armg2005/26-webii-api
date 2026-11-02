@@ -7,15 +7,20 @@ import {
   idParamSchema,
   updateUserV2Schema,
 } from "../schemas/userSchema.js";
+import uploadPhoto from "../../../config/multer.js";
+import requireUpdateData from "../middlewares/requireUpdateData.js";
+
 
 const router = express.Router();
 
-router.post("/", validate(createUserV2Schema), userController.create);
+router.post("/", uploadPhoto, validate(createUserV2Schema), userController.create);
 router.get("/", userController.getAll);
 router.get("/:id", validate(idParamSchema, "params"), userController.getById);
 router.patch(
   "/:id",
   validate(idParamSchema, "params"),
+  uploadPhoto,
+  requireUpdateData,
   validate(updateUserV2Schema),
   userController.update,
 );

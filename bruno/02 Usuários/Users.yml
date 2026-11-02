@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/users"
+  url: "{{baseUrl}}/v1/users"
 
 runtime:
   scripts:

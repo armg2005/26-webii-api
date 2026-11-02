@@ -7,7 +7,7 @@ info:
 
 http:
   method: DELETE
-  url: "{{baseUrl}}/users/{{linkedUserId}}"
+  url: "{{baseUrl}}/v1/users/{{linkedUserId}}"
 
 runtime:
   scripts:
@@ -16,7 +16,7 @@ runtime:
         const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
         const userResponse = await bru.sendRequest({
           method: "POST",
-          url: `${bru.getEnvVar("baseUrl")}/users`,
+          url: `${bru.getEnvVar("baseUrl")}/v1/users`,
           headers: { "Content-Type": "application/json" },
           data: {
             nome: "Professor com vínculo",
@@ -32,7 +32,7 @@ runtime:
         const linkedUserId = userResponse.data.data.id;
         const subjectResponse = await bru.sendRequest({
           method: "POST",
-          url: `${bru.getEnvVar("baseUrl")}/subjects`,
+          url: `${bru.getEnvVar("baseUrl")}/v1/subjects`,
           headers: { "Content-Type": "application/json" },
           data: {
             nome: "Matéria temporária para vínculo",
@@ -53,7 +53,7 @@ runtime:
         if (subjectId) {
           await bru.sendRequest({
             method: "DELETE",
-            url: `${bru.getEnvVar("baseUrl")}/subjects/${subjectId}`
+            url: `${bru.getEnvVar("baseUrl")}/v1/subjects/${subjectId}`
           });
         }
 
@@ -62,7 +62,7 @@ runtime:
         if (userId) {
           await bru.sendRequest({
             method: "DELETE",
-            url: `${bru.getEnvVar("baseUrl")}/users/${userId}`
+            url: `${bru.getEnvVar("baseUrl")}/v1/users/${userId}`
           });
         }
     - type: tests

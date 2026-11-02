@@ -7,7 +7,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/users/{{duplicateTargetUserId}}"
+  url: "{{baseUrl}}/v1/users/{{duplicateTargetUserId}}"
   body:
     type: json
     data: |-
@@ -22,7 +22,7 @@ runtime:
         const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
         const targetResponse = await bru.sendRequest({
           method: "POST",
-          url: `${bru.getEnvVar("baseUrl")}/users`,
+          url: `${bru.getEnvVar("baseUrl")}/v1/users`,
           headers: { "Content-Type": "application/json" },
           data: {
             nome: "Usuário que receberia e-mail duplicado",
@@ -37,7 +37,7 @@ runtime:
 
         const duplicateResponse = await bru.sendRequest({
           method: "POST",
-          url: `${bru.getEnvVar("baseUrl")}/users`,
+          url: `${bru.getEnvVar("baseUrl")}/v1/users`,
           headers: { "Content-Type": "application/json" },
           data: {
             nome: "Usuário temporário para conflito",
@@ -60,7 +60,7 @@ runtime:
         if (duplicateUserId) {
           await bru.sendRequest({
             method: "DELETE",
-            url: `${bru.getEnvVar("baseUrl")}/users/${duplicateUserId}`
+            url: `${bru.getEnvVar("baseUrl")}/v1/users/${duplicateUserId}`
           });
         }
 
@@ -69,7 +69,7 @@ runtime:
         if (targetUserId) {
           await bru.sendRequest({
             method: "DELETE",
-            url: `${bru.getEnvVar("baseUrl")}/users/${targetUserId}`
+            url: `${bru.getEnvVar("baseUrl")}/v1/users/${targetUserId}`
           });
         }
     - type: tests

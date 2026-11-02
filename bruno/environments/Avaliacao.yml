@@ -1,0 +1,8 @@
+{
+  "name": "Avaliacao",
+  "variables":
+    [
+      { "name": "baseUrl", "value": "http://127.0.0.1:59313" },
+      { "name": "uploadStubUrl", "value": "http://127.0.0.1:59314" },
+    ],
+}

@@ -1,0 +1,46 @@
+{
+  "info":
+    {
+      "name": "PATCH ID inválido",
+      "type": "http",
+      "seq": 17,
+      "tags": ["aula-09-atividade"],
+    },
+  "http":
+    {
+      "method": "PATCH",
+      "url": "{{baseUrl}}/v2/users/{{a09Id}}",
+      "body":
+        {
+          "type": "multipart-form",
+          "data":
+            [
+              {
+                "type": "file",
+                "name": "foto",
+                "value": ["../tests/fixtures/upload/image.png"],
+                "contentType": "image/png",
+              },
+            ],
+        },
+    },
+  "runtime":
+    {
+      "scripts":
+        [
+          {
+            "type": "before-request",
+            "code": "const scenario = {\"title\": \"PATCH ID inválido\", \"file\": \"image\", \"invalidId\": true, \"status\": 400, \"code\": \"VALIDATION_ERROR\", \"calls\": 0};\nconst baseUrl = bru.getEnvVar(\"baseUrl\");\nconst run = `${Date.now()}-${Math.random().toString(16).slice(2)}`;\nbru.setVar(\"a09Ids\", []);\nbru.setVar(\"a09Cleanup\", [\"Limpeza ainda não executada\"]);\nbru.setVar(\"a09Cross\", null); bru.setVar(\"a09Observed\", null);\nbru.setVar(\"a09UserEmail\", `fixture-${run}@example.com`);\nbru.setVar(\"a09Email\", `upload-${run}@example.com`);\n/** Preparação JSON independente do upload da atividade. */\nasync function fixture(email) {\n  const r = await bru.sendRequest({ method:\"POST\", url:`${baseUrl}/v2/users`, headers:{\"Content-Type\":\"application/json\"}, data:{primeiroNome:\"Ada\",sobrenome:\"Lovelace\",email,foto:\"https://example.com/previous.png\"} });\n  if (r.status !== 201) throw new Error(`Preparação de fixture: HTTP ${r.status}`);\n  const ids=bru.getVar(\"a09Ids\");ids.push(r.data.data.id);bru.setVar(\"a09Ids\",ids);return r.data.data;\n}\nconst user=await fixture(bru.getVar(\"a09UserEmail\"));\nbru.setVar(\"a09Id\",String(user.id));\nif (scenario.duplicate) {\n  if (\"patch\" === \"post\") bru.setVar(\"a09Email\",user.email);\n  else { const other=await fixture(`other-${run}@example.com`);bru.setVar(\"a09DuplicateEmail\",other.email); }\n}\nif(scenario.missing) { const r=await bru.sendRequest({method:\"DELETE\",url:`${baseUrl}/v1/users/${user.id}`}); if(r.status!==200)throw new Error(\"Preparação de ID ausente falhou\"); }\nif(scenario.invalidId) bru.setVar(\"a09Id\",\"abc\");\nconst stats=await bru.sendRequest({method:\"GET\",url:`${bru.getEnvVar(\"uploadStubUrl\")}/stats`});\nif(stats.status!==200) throw new Error(\"Simulador de upload indisponível\");\nbru.setVar(\"a09CountBefore\",stats.data.uploads);\n",
+          },
+          {
+            "type": "after-response",
+            "code": "const scenario = {\"title\": \"PATCH ID inválido\", \"file\": \"image\", \"invalidId\": true, \"status\": 400, \"code\": \"VALIDATION_ERROR\", \"calls\": 0};\nconst baseUrl=bru.getEnvVar(\"baseUrl\");\nif(res.status===201) { const ids=bru.getVar(\"a09Ids\");ids.push(res.body.data.id);bru.setVar(\"a09Ids\",ids); }\nconst id=\"patch\"===\"post\" && res.status===201 ? res.body.data.id : bru.getVar(\"a09Ids\")[0];\n/** Preserva respostas HTTP 4xx observadas; falhas de rede continuam erros. */\nasync function observe(options) {\n try { return await bru.sendRequest(options); }\n catch(error) { if(error.response)return {status:error.response.status,data:error.response.data};throw error; }\n}\nconst observed=await observe({method:\"GET\",url:`${baseUrl}/v2/users/${id}`});\nbru.setVar(\"a09Observed\",observed.data.data || null);\nconst cross=await observe({method:\"GET\",url:`${baseUrl}/v1/users/${id}`});\nbru.setVar(\"a09Cross\",cross.data.data || null);\nconst listing=await bru.sendRequest({method:\"GET\",url:`${baseUrl}/v2/users`});\nbru.setVar(\"a09CreatedCount\",listing.data.data.filter(item=>item.email===bru.getVar(\"a09Email\")).length);\nconst stats=await bru.sendRequest({method:\"GET\",url:`${bru.getEnvVar(\"uploadStubUrl\")}/stats`});\nbru.setVar(\"a09Calls\",stats.data.uploads-bru.getVar(\"a09CountBefore\"));\nconst errors=[];\nfor(const ownId of bru.getVar(\"a09Ids\").slice().reverse()) {\n try { const r=await observe({method:\"DELETE\",url:`${baseUrl}/v1/users/${ownId}`});if(![200,404].includes(r.status))errors.push(`HTTP ${r.status}`); }\n catch { errors.push(\"Falha de limpeza da própria fixture\"); }\n}\nbru.setVar(\"a09Cleanup\",errors);\n",
+          },
+          {
+            "type": "tests",
+            "code": "const scenario={\"title\": \"PATCH ID inválido\", \"file\": \"image\", \"invalidId\": true, \"status\": 400, \"code\": \"VALIDATION_ERROR\", \"calls\": 0};\ntest(\"Limpa somente fixtures próprias\",()=>expect(bru.getVar(\"a09Cleanup\")).to.deep.equal([]));\ntest(\"Status e erro do contrato final\",()=>{\n expect(res.status).to.equal(scenario.status);\n expect(res.body.success).to.equal(!scenario.code);\n if(scenario.code) {\n  expect(res.body.error.code).to.equal(scenario.code);\n  expect(JSON.stringify(res.body)).not.to.include(\"sensitive-provider-detail\");\n  if(scenario.message)expect(res.body.error.message).to.equal(scenario.message);\n  if(scenario.field)expect(res.body.error.details.some(item=>item.field===scenario.field)).to.equal(true);\n }\n});\ntest(\"Uploads respeitam a ordem de validação\",()=>expect(bru.getVar(\"a09Calls\")).to.equal(scenario.calls));\ntest(\"Persistência e compatibilidade V1\",()=>{\n const stored=bru.getVar(\"a09Observed\");\n if(scenario.code) {\n  if(!scenario.missing)expect(stored.foto).to.equal(\"https://example.com/previous.png\");\n  if(\"patch\"===\"post\" && !scenario.duplicate)expect(bru.getVar(\"a09CreatedCount\")).to.equal(0);\n  return;\n }\n expect(res.body).to.have.property(\"data\");\n expect(stored.foto).to.equal(res.body.data.foto);\n expect(bru.getVar(\"a09Cross\").foto).to.equal(res.body.data.foto);\n const expected={previous:\"https://example.com/previous.png\",manual:\"https://example.com/manual.png\",null:null}[scenario.photo];\n if(scenario.photo===\"uploaded\")expect(stored.foto).to.match(/^https:\\/\\/[^/]+\\/[0-9a-f-]{36}\\/$/);\n else expect(stored.foto).to.equal(expected);\n expect(stored.primeiroNome).to.equal(scenario.fields?.primeiroNome || \"Ada\");\n expect(stored.sobrenome).to.equal(\"Lovelace\");\n if(scenario.fields?.telefone)expect(stored.telefone).to.equal(scenario.fields.telefone);\n});\n",
+          },
+        ],
+    },
+  "settings": { "encodeUrl": true },
+}

@@ -7,7 +7,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/users"
+  url: "{{baseUrl}}/v1/users"
   body:
     type: json
     data: |-
@@ -46,7 +46,7 @@ runtime:
     - type: after-response
       code: |-
         const fixtures = bru.getVar("caseFixtures") || [];
-        if (res.status === 201 && res.body?.data?.id) fixtures.push({ resource: "users", id: res.body.data.id });
+        if (res.status === 201 && res.body?.data?.id) fixtures.push({ resource: "v1/users", id: res.body.data.id });
         const failures = [];
         for (const fixture of [...fixtures].reverse()) {
           try {

@@ -7,7 +7,7 @@ info:
 
 http:
   method: DELETE
-  url: "{{baseUrl}}/subjects/{{subjectId}}"
+  url: "{{baseUrl}}/v1/subjects/{{subjectId}}"
 
 runtime:
   scripts:
@@ -18,7 +18,7 @@ runtime:
         if (res.status === 200 && professorId) {
           await bru.sendRequest({
             method: "DELETE",
-            url: `${bru.getEnvVar("baseUrl")}/users/${professorId}`
+            url: `${bru.getEnvVar("baseUrl")}/v1/users/${professorId}`
           });
         }
     - type: tests

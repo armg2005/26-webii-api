@@ -7,7 +7,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/questions"
+  url: "{{baseUrl}}/v1/questions"
   body:
     type: json
     data: |-
@@ -43,17 +43,17 @@ runtime:
           bru.setVar("caseMissingId", String(id));
           bru.setVar("caseFixtures", bru.getVar("caseFixtures").filter(item => item.resource !== resource || item.id !== id));
         }
-        const userId = await createFixture("users", { nome: "Professor temporário", email: `fixture-${suffix}@exemplo.com` });
+        const userId = await createFixture("v1/users", { nome: "Professor temporário", email: `fixture-${suffix}@exemplo.com` });
         bru.setVar("caseUserId", String(userId));
-        const subjectId = await createFixture("subjects", { nome: "Matéria temporária", professorId: userId });
+        const subjectId = await createFixture("v1/subjects", { nome: "Matéria temporária", professorId: userId });
         bru.setVar("caseSubjectId", String(subjectId));
-        const absentSubject = await createFixture("subjects", { nome: "Matéria ausente", professorId: userId });
-        await removeFixture("subjects", absentSubject);
+        const absentSubject = await createFixture("v1/subjects", { nome: "Matéria ausente", professorId: userId });
+        await removeFixture("v1/subjects", absentSubject);
     - type: after-response
       code: |-
         const fixtures = bru.getVar("caseFixtures") || [];
         // Uma implementação incompleta pode aceitar uma entrada que deveria falhar.
-        if (res.status === 201 && res.body?.data?.id) fixtures.push({ resource: "questions", id: res.body.data.id });
+        if (res.status === 201 && res.body?.data?.id) fixtures.push({ resource: "v1/questions", id: res.body.data.id });
         const failures = [];
         for (const fixture of [...fixtures].reverse()) {
           try {
@@ -71,7 +71,7 @@ runtime:
           expect(res.body.success).to.equal(false);
           expect(res.body.error.code).to.equal("NOT_FOUND");
           expect(res.body.timestamp).to.be.a("string");
-          expect(res.body.path).to.equal("/questions");
+          expect(res.body.path).to.equal("/v1/questions");
         });
 
 settings:

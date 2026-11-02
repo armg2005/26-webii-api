@@ -13,6 +13,8 @@ runtime:
       code: |-
         test("Retorna 200 quando a API e o banco estão disponíveis", function() {
           expect(res.status).to.equal(200);
+          expect(res.body.version).to.equal("1.0.0");
+          expect(res.body.availableVersions).to.include("v1");
         });
 
 settings:
